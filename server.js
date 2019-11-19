@@ -19,6 +19,8 @@ server.use( cors() );
 /********* Function *********/
 server.get('/location', locationHandler);
 server.get('/weather', weatherHandler);
+server.get('/events', eventHandler);
+
 
 /*
 Object should look like this:
@@ -68,8 +70,8 @@ function weatherHandler(request,response) {
 
 function getWeather(query) {
   const url = `https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${query.latitude},${query.longitude}`;
-  console.log('url  : ', url );
-  
+  // console.log('url  : ', url );
+
   return superagent.get(url)
     .then( data => {
       let weather = data.body;
@@ -90,5 +92,38 @@ server.use('*', (request, response) =>{
   response.status(404).send(Object.entries(errorobject));
 });
 
+/*********** EventFul ************/
+
+function eventHandler(request,response) {
+  getEvent(request.query.data)
+    .then( eventData => response.status(200).json(eventData) );
+
+} // End of event handler function 
+
+function getEvent(query) {
+  const url = `http://api.eventful.com/keys?new_key=${process.env.EVENTFUL_API_KEY}/${query.latitude},${query.longitude}`;
+  console.log('url eventttttttttttttttttttttttttttttttttttttttttttt : ', url );
+  console.log('queryyyyyyyyyyyyyyyyyyyyyyyyyyy : ', query);
+
+  // console.log('dataaaaaaaaaaaaaaaaaaaaaaaaaaa : ', data);
+
+    // console.log('super agent urllllllllllll' ,superagent.get(url));
+    return superagent.get(url)
+    .then( data => {
+      let eventful = data.body;
+      console.log('data.body : ', data.body);
+      return eventful.daily.data.map( (day) => {
+        return new Eventful(day);
+      });
+    });
+}// End of get eventful function 
+
+function Eventful(day) {
+  this.link = url;
+  this.name = query.search_query;
+  this.event_date = new Date(day.time * 1022.1).toDateString();
+  this.summary = query.summary;
+
+} // End of Eventful constructor function 
 
 server.listen( PORT, () => console.log('hello world, from port', PORT));
