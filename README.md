@@ -7,16 +7,16 @@
 
 ## Start time: 3:11 PM 
 
-## Finish time: _____
+## Finish time: 10:51 AM
 
-## Actual time needed to complete: _____
+## Actual time needed to complete:5 Hours 
 
 # ************************************************************************************************************ #
 
 # Project Name
 
-**Author**: Your Name Goes Here
-**Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)
+**Author**: Nawal Suliman - Naseem Izzat 
+**Version**: 0.0.2
 
 ## Overview
 <!-- Provide a high level overview of what this application is and why you are building it, beyond the fact that it's an assignment for this class. (i.e. What's your problem domain?) -->
