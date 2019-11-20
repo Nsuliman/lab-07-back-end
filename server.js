@@ -16,7 +16,7 @@ const server = express();
 
 server.use( cors() );
 
-/********* Function *********/
+/***************************************************** Function ***************************************/
 server.get('/location', locationHandler);
 server.get('/weather', weatherHandler);
 server.get('/events', eventHandler);
@@ -59,7 +59,7 @@ function Location(city, data) {
 
 } // End of location constructor function 
 
-/************** WEATHER **********/ 
+/****************************************************** WEATHER ************************************************/ 
 
 
 function weatherHandler(request,response) {
@@ -74,7 +74,7 @@ function getWeather(query) {
 
   return superagent.get(url)
     .then( data => {
-      let weather = data.body;
+      const weather = data.body;
       return weather.daily.data.map( (day) => {
         return new Weather(day);
       });
@@ -87,12 +87,12 @@ function Weather(day) {
 } // End of weather constructor function 
 
 // When an error happens ...
-let errorobject = {status : 500 ,  responseText : 'Sorry, something went wrong'};
+const errorobject = {status : 500 ,  responseText : 'Sorry, something went wrong'};
 server.use('*', (request, response) =>{
   response.status(404).send(Object.entries(errorobject));
 });
 
-/*********** EventFul ************/
+/************************************** EventFul **********************************************/
 
 function eventHandler(request,response) {
   getEvent(request.query.data)
@@ -101,28 +101,30 @@ function eventHandler(request,response) {
 } // End of event handler function 
 
 function getEvent(query) {
-  const url = `http://api.eventful.com/keys?new_key=${process.env.EVENTFUL_API_KEY}/${query.latitude},${query.longitude}`;
-  console.log('url eventttttttttttttttttttttttttttttttttttttttttttt : ', url );
-  console.log('queryyyyyyyyyyyyyyyyyyyyyyyyyyy : ', query);
+  const url = `http://api.eventful.com/json/events/search?app_key=${process.env.EVENTFUL_API_KEY}&location=${query.formatted_query}`;
+    console.log('url eventttttttttttttttttttttttttttttttttttttttttttt : \n\n\n\n\n\n', url );
 
-  // console.log('dataaaaaaaaaaaaaaaaaaaaaaaaaaa : ', data);
-
+    console.log('querrrrrrrrrrrrry : \n\n\n\n\n\n ', query );
     // console.log('super agent urllllllllllll' ,superagent.get(url));
+
     return superagent.get(url)
-    .then( data => {
-      let eventful = data.body;
-      console.log('data.body : ', data.body);
-      return eventful.daily.data.map( (day) => {
-        return new Eventful(day);
+    .then( data => {   
+      console.log('data 2 : ', data );   
+      const eventful = JSON.parse(data.text);
+      console.log('eventful ', eventful);
+      return eventful.events.event.map( (eventday) => {
+        console.log('eventday : ', eventday);
+        return new Eventful(eventday);
       });
     });
 }// End of get eventful function 
 
-function Eventful(day) {
-  this.link = url;
-  this.name = query.search_query;
-  this.event_date = new Date(day.time * 1022.1).toDateString();
-  this.summary = query.summary;
+function Eventful(eventday) {
+
+  this.link = eventday.url;
+  this.name = eventday.title;
+  this.event_date = eventday.start_time;
+  this.summary = eventday.description;
 
 } // End of Eventful constructor function 
 
