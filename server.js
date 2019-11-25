@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 const server = express();
 
-server.use( cors() );
+server.use(cors());
 
 /***************************************************** Function ***************************************/
 server.get('/location', locationHandler);
@@ -32,23 +32,22 @@ Object should look like this:
 }
  */
 
-function locationHandler(request,response) {
+function locationHandler(request, response) {
   getLocation(request.query.data)             // Get city input from user
-    .then( locationData => response.status(200).json(locationData) );            // To show up the generated data 
+    .then(locationData => response.status(200).json(locationData));            // To show up the generated data 
 } // End of location handler function 
 
 function getLocation(city) {
- 
+
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}&key=${process.env.GEOCODE_API_KEY}`
 
   return superagent.get(url)
-    .then( data => {
-      // console.log('\n\n\n\n\n\n\n\n data : ', data.header);
-      // console.log('data.body : ', data.body);
+    .then(data => {
       return new Location(city, data.body);
     })
 
-} // End of get location function 
+}
+///// End of get location function 
 
 
 function Location(city, data) {
@@ -59,12 +58,12 @@ function Location(city, data) {
 
 } // End of location constructor function 
 
-/****************************************************** WEATHER ************************************************/ 
+/****************************************************** WEATHER ************************************************/
 
 
-function weatherHandler(request,response) {
+function weatherHandler(request, response) {
   getWeather(request.query.data)
-    .then( weatherData => response.status(200).json(weatherData) );
+    .then(weatherData => response.status(200).json(weatherData));
 
 } // End of weather handler function 
 
@@ -73,9 +72,9 @@ function getWeather(query) {
   // console.log('url  : ', url );
 
   return superagent.get(url)
-    .then( data => {
+    .then(data => {
       const weather = data.body;
-      return weather.daily.data.map( (day) => {
+      return weather.daily.data.map((day) => {
         return new Weather(day);
       });
     });
@@ -87,32 +86,32 @@ function Weather(day) {
 } // End of weather constructor function 
 
 // When an error happens ...
-const errorobject = {status : 500 ,  responseText : 'Sorry, something went wrong'};
-server.use('*', (request, response) =>{
+const errorobject = { status: 500, responseText: 'Sorry, something went wrong' };
+server.use('*', (request, response) => {
   response.status(404).send(Object.entries(errorobject));
 });
 
 /************************************** EventFul **********************************************/
 
-function eventHandler(request,response) {
+function eventHandler(request, response) {
   getEvent(request.query.data)
-    .then( eventData => response.status(200).json(eventData) );
+    .then(eventData => response.status(200).json(eventData));
 
 } // End of event handler function 
 
 function getEvent(query) {
   const url = `http://api.eventful.com/json/events/search?app_key=${process.env.EVENTFUL_API_KEY}&location=${query.formatted_query}`;
-    console.log('url eventttttttttttttttttttttttttttttttttttttttttttt : \n\n\n\n\n\n', url );
+  console.log('url eventttttttttttttttttttttttttttttttttttttttttttt : \n\n\n\n\n\n', url);
 
-    console.log('querrrrrrrrrrrrry : \n\n\n\n\n\n ', query );
-    // console.log('super agent urllllllllllll' ,superagent.get(url));
+  console.log('querrrrrrrrrrrrry : \n\n\n\n\n\n ', query);
+  // console.log('super agent urllllllllllll' ,superagent.get(url));
 
-    return superagent.get(url)
-    .then( data => {   
-      console.log('data 2 : ', data );   
+  return superagent.get(url)
+    .then(data => {
+      console.log('data 2 : ', data);
       const eventful = JSON.parse(data.text);
       console.log('eventful ', eventful);
-      return eventful.events.event.map( (eventday) => {
+      return eventful.events.event.map((eventday) => {
         console.log('eventday : ', eventday);
         return new Eventful(eventday);
       });
@@ -128,4 +127,4 @@ function Eventful(eventday) {
 
 } // End of Eventful constructor function 
 
-server.listen( PORT, () => console.log('hello world, from port', PORT));
+server.listen(PORT, () => console.log('hello world, from port', PORT));
